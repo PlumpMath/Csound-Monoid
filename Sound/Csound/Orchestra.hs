@@ -34,26 +34,18 @@ renderInstrument n (Instrument olines) =
     in "instr " ++ show n ++ "\n" ++ body ++ "endin"
 
 data Orchestra = Instr Int Instrument
-               | Orchestra String
-               | EmptyOrc 
+               | Orchestra [Orchestra]
 
 instance Monoid Orchestra where
-  mempty = EmptyOrc
-  mappend EmptyOrc a = a
-  mappend a EmptyOrc = a
-  mappend a b = Orchestra $ renderOrchestra a ++ "\n" ++ renderOrchestra b
+  mempty = Orchestra []
+  mappend (Orchestra acc) x = Orchestra (acc ++ [x])
+  mappend x (Orchestra acc) = Orchestra (x:acc)
+  mappend a b = Orchestra [a,b]
 
 renderOrchestra :: Orchestra -> String
 renderOrchestra (Instr n instr) = renderInstrument n instr
-renderOrchestra (Orchestra str) = str
+renderOrchestra (Orchestra xs) = intercalate "\n" $ map renderOrchestra xs
 
 instance Show Orchestra where
   show = renderOrchestra
                                       
-testInstr = Instrument [
-  (["a1"], Oscil (ODbl 10000) (ODbl 440) (OInt 1)),
-  ([],     Out   "a1")
-  ]
-
-testOrc = Instr 1 testInstr `mappend` Instr 2 testInstr
-
