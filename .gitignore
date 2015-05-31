@@ -2,3 +2,7 @@
 *~
 dist/
 cabal.sandbox.config
+*.wav
+*.csd
+*.orc
+*.sco
