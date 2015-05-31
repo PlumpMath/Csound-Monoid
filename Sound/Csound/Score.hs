@@ -1,12 +1,10 @@
 module Sound.Csound.Score (
   Gen (..),
-  Score (
-    BlankLine,
-    Comment,
-    A,B,E,F,I,M,N,Q,R,S,T,V,X
-  )
+  Score (..)
 ) where
-  
+
+import Data.List
+
 -- TODO add all GEN routines
 data Gen = GEN10 [Double]
 
@@ -28,9 +26,7 @@ data Score = BlankLine
            | T Double [(Double,Double)]
            | V Double
            | X 
-           -- following are not exported
-           | MultiLine String -- accumulator for Monoid instance
-           | EmptyLine        -- mempty of Monoid instance
+           | MultiScore [Score]
 
 instance Show Score where
   show BlankLine = ""
@@ -53,14 +49,14 @@ instance Show Score where
   show (V a)        = unwords ["v", show a]                       
   show X            = "x"                     
 
+  show (MultiScore acc) = intercalate "\n" $ map show acc
   
-  show (MultiLine str) = str
-  show EmptyLine = error "Cannot show an EmptyLine"
              
 instance Monoid Score where
-  mempty = EmptyLine
+  mempty = MultiScore []
 
-  mappend a EmptyLine = a
-  mappend EmptyLine b = b
-  mappend a b = MultiLine $ show a ++ "\n" ++ show b
+  mappend (MultiScore acc) x = MultiScore (acc ++ [x])
+  mappend x (MultiScore acc) = MultiScore (x:acc)
+  mappend x y = MultiScore [x,y]
 
+  
