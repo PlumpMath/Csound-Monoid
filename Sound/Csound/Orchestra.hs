@@ -16,11 +16,13 @@ instance Show OrcArg where
   show (OInt i) = show i
   show (OStr s) = s
 
-data Opcode = Foscil OrcArg OrcArg OrcArg OrcArg OrcArg OrcArg
+data Opcode = ADSR OrcArg OrcArg OrcArg OrcArg OrcArg
+            | Foscil OrcArg OrcArg OrcArg OrcArg OrcArg OrcArg
             | Oscil OrcArg OrcArg OrcArg
             | Out String
 
 instance Show Opcode where
+  show (ADSR a b c d e) = "adsr " ++ intercalate "," (map show [a,b,c,d,e])
   show (Foscil a b c d e f) = "foscil " ++ intercalate "," (map show [a,b,c,d,e,f])
   show (Oscil a b c) = "oscil " ++ intercalate "," [show a, show b, show c]
   show (Out a) = "out " ++ a
