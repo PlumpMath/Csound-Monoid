@@ -13,25 +13,25 @@ instance Show Gen where
 
 data Score = BlankLine
            | Comment String
-           | A Double Double 
+           | A Double Double
            | B Double
            | E (Maybe Double)
            | F Int Double Int Gen
            | I Int Double Double [Double]
            | M String
-           | N String 
+           | N String
            | Q Int Double Int
            | R Int
            | S (Maybe Double)
            | T Double [(Double,Double)]
            | V Double
-           | X 
+           | X
            | MultiScore [Score]
 
 instance Show Score where
   show BlankLine = ""
   show (Comment str) = "; " ++ str
-  
+
   show (A a b)      = unwords ["a", "0", show a, show b]
   show (B a)        = unwords ["b", show a]
   show (E Nothing)  = unwords ["e"]
@@ -46,17 +46,15 @@ instance Show Score where
   show (S (Just a)) = unwords ["s", show a]
   show (T a b)      = let pair2word (x,y) = show x ++ " " ++ show y
                       in unwords $ ["t", "0", show a] ++ map pair2word b
-  show (V a)        = unwords ["v", show a]                       
-  show X            = "x"                     
+  show (V a)        = unwords ["v", show a]
+  show X            = "x"
 
   show (MultiScore acc) = intercalate "\n" $ map show acc
-  
-             
+
+
 instance Monoid Score where
   mempty = MultiScore []
 
   mappend (MultiScore acc) x = MultiScore (acc ++ [x])
   mappend x (MultiScore acc) = MultiScore (x:acc)
   mappend x y = MultiScore [x,y]
-
-  
